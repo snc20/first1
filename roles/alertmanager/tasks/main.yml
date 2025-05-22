@@ -1,0 +1,27 @@
+- name: DEBUG docker_host value
+  debug:
+    msg: "DOCKER_HOST = {{ docker_host }}"
+
+- name: Create Alertmanager directory
+  file:
+    path: /opt/monitoring/alertmanager
+    state: directory
+
+- name: Copy Alertmanager config
+  template:
+    src: alertmanager.yml.j2
+    dest: /opt/monitoring/alertmanager/alertmanager.yml
+
+- name: Run Alertmanager container
+  community.docker.docker_container:
+    name: alertmanager
+    image: prom/alertmanager
+    state: started
+    restart_policy: always
+    command: >
+      --config.file=/etc/alertmanager/alertmanager.yml
+    ports:
+      - "9093:9093"
+    volumes:
+      - /opt/alertmanager:/etc/alertmanager
+    docker_host: "{{ docker_host }}"

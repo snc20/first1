@@ -1,0 +1,5 @@
+nginx_port: 80
+db_name: diplomadb
+db_user: diplomauser
+db_password: supersecurepass123
+docker_host: unix://var/run/docker.sock

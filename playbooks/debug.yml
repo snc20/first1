@@ -1,0 +1,7 @@
+- hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Test docker_host
+      debug:
+        var: docker_host

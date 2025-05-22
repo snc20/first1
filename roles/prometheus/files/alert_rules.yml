@@ -1,0 +1,11 @@
+groups:
+  - name: example_alert
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Інстанс {{ $labels.instance }} недоступний"
+          description: "{{ $labels.instance }} вже не відповідає протягом 30 секунд."

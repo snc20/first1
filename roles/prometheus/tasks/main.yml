@@ -1,0 +1,32 @@
+- name: Create Prometheus config directory
+  file:
+    path: /opt/monitoring/prometheus
+    state: directory
+
+- name: Copy Prometheus config
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/monitoring/prometheus/prometheus.yml
+
+- name: Copy alert rules
+  copy:
+    src: alert.rules.yml
+    dest: /opt/monitoring/prometheus/alert.rules.yml
+
+- name: Ensure Prometheus config includes alerting rules
+  lineinfile:
+    path: /opt/monitoring/prometheus/prometheus.yml
+    line: '  - /etc/prometheus/alert.rules.yml'
+    insertafter: 'rule_files:'
+  notify: Restart Prometheus
+
+- name: Run Prometheus container
+  community.docker.docker_container:
+    name: prometheus
+    image: prom/prometheus
+    state: started
+    restart_policy: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - /opt/monitoring/prometheus:/etc/prometheus

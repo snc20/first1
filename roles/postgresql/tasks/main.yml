@@ -1,0 +1,15 @@
+- name: Install PostgreSQL
+  apt:
+    name: [postgresql, python3-psycopg2]
+    state: present
+
+- name: Ensure PostgreSQL is started
+  service:
+    name: postgresql
+    state: started
+    enabled: true
+
+- name: Ensure database exists (no become_user)
+  become: true
+  shell: |
+    sudo -u postgres psql -tc "SELECT 1 FROM pg_database WHERE datname='{{ db_name }}'" | grep -q 1 || sudo -u postgres psql -c "CREATE DATABASE {{ db_name }};"

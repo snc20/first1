@@ -1,0 +1,32 @@
+---
+- name: Ensure adminer directory exists
+  file:
+    path: /var/www/html/adminer
+    state: directory
+    mode: '0755'
+
+- name: Download Adminer PHP file
+  get_url:
+    url: https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php
+    dest: /var/www/html/adminer/index.php
+    mode: '0644'
+
+- name: Copy nginx configuration for Adminer
+  template:
+    src: adminer-nginx.conf.j2
+    dest: /etc/nginx/sites-available/adminer
+    mode: '0644'
+  notify: Reload nginx
+
+- name: Enable adminer site
+  file:
+    src: /etc/nginx/sites-available/adminer
+    dest: /etc/nginx/sites-enabled/adminer
+    state: link
+    force: true
+
+- name: Disable default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
