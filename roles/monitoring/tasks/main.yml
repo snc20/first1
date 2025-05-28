@@ -1,4 +1,9 @@
 ---
+- name: Ensure clean state (remove old monitoring folder)
+  file:
+    path: /opt/monitoring
+    state: absent
+
 - name: Create monitoring directory
   file:
     path: /opt/monitoring
@@ -31,11 +36,11 @@
   args:
     chdir: /opt/monitoring
 
-- name: Run Node Exporter
-  community.docker.docker_container:
-    name: node_exporter
-    image: prom/node-exporter
-    state: started
-    restart_policy: always
-    ports:
-      - "9100:9100"
+#- name: Run Node Exporter
+ # community.docker.docker_container:
+  #  name: node_exporter
+   # image: prom/node-exporter
+    #state: started
+    #restart_policy: always
+    #ports:
+     # - "9100:9100"

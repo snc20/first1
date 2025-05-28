@@ -1,4 +1,3 @@
----
 - name: Create jenkins directory
   file:
     path: /opt/jenkins
@@ -11,6 +10,27 @@
     dest: /opt/jenkins/docker-compose.yml
 
 - name: Start Jenkins with docker compose
-  command: docker compose up -d
+  command: docker compose up -d --build
+  args:
+    chdir: /opt/jenkins
+
+- name: Wait for Jenkins container to be ready
+  pause:
+    seconds: 15
+
+- name: Ensure Jenkins job directory exists
+  file:
+    path: /opt/jenkins/jenkins_home/jobs/iac-deploy
+    state: directory
+    mode: '0755'
+
+- name: Copy job config.xml into Jenkins job
+  copy:
+    src: config.xml
+    dest: /opt/jenkins/jenkins_home/jobs/iac-deploy/config.xml
+    mode: '0644'
+
+- name: Restart Jenkins container to apply job config
+  command: docker compose restart
   args:
     chdir: /opt/jenkins
