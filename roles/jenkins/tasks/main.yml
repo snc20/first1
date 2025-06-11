@@ -9,8 +9,39 @@
     src: jenkins-compose.yml.j2
     dest: /opt/jenkins/docker-compose.yml
 
+- name: Copy Dockerfile for Jenkins
+  copy:
+    src: Dockerfile
+    dest: /opt/jenkins/Dockerfile
+
+- name: Fix permissions for Jenkins home directory
+  file:
+    path: /opt/jenkins/jenkins_home
+    state: directory
+    owner: 1000
+    group: 1000
+    mode: '0777'  # або '0755' і owner
+    recurse: yes
+
 - name: Start Jenkins with docker compose
   command: docker compose up -d --build
+  args:
+    chdir: /opt/jenkins
+
+- name: Ensure Jenkins job directory exists
+  file:
+    path: /opt/jenkins/jenkins_home/jobs/iac-deploy
+    state: directory
+    mode: '0755'
+
+- name: Copy job config.xml into Jenkins job
+  copy:
+    src: config.xml
+    dest: /opt/jenkins/jenkins_home/jobs/iac-deploy/config.xml
+    mode: '0644'
+
+- name: Restart Jenkins container to apply job config
+  command: docker compose restart
   args:
     chdir: /opt/jenkins
 

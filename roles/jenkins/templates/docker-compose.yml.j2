@@ -1,0 +1,9 @@
+version: '3'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    volumes:
+      - /opt/jenkins/jenkins_home:/var/jenkins_home
+    restart: unless-stopped
+    network_mode: host
